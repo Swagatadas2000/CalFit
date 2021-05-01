@@ -1,9 +1,41 @@
-const express = require('express')
+const Fitness = require('../models/Fitness');
+const mongoose = require('mongoose');
 
-const router = express.Router();
+exports.getFitnessDetails = async (req, res, next) => {
+    try {
+        const fitnessDetails = await Fitness.find();
 
-const { getFitnessDetails, postFitnessDetails } = require('../controllers/fitness')
+        return res.status(200).json({
+            success: true,
+            data: fitnessDetails
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
 
-router.route('/').get(getFitnessDetails).post(postFitnessDetails);
+exports.postFitnessDetails = async (req, res, next) => {
+    try {
+        const newFitnessDetails = new Fitness({
+            height: req.body.height,
+            weight: req.body.weight,
+            finalCalories: req.body.finalCalories,
+            age: req.body.age,
 
-module.exports = router;
+        })
+        await newFitnessDetails.save();
+        return res.status(201).json({
+            success: true,
+            data: newFitnessDetails
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+        console.log(error)
+    }
+}
